@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from cliente.views import cadastrar_cliente
+from .views import inicio, historia
 
 urlpatterns = [
+    path('',inicio),
+    path('historia/', historia, name='historia')
 ]
