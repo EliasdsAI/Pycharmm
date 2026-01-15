@@ -1,23 +1,27 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
+import categoria
+from categoria.models import Categoria
 from produto.models import Produto
 
 
 # Create your views here.
-def cadastrar_produto(request):
+def cadastrar(request):
+    categorias = Categoria.objects.all()
     if request.method == 'POST':
         nome = request.POST.get('nome')
         descricao = request.POST.get('descricao')
-        quantidade = request.POST.get('quantidade')
+        quantidade = request.POST.get('quant')
         preco = request.POST.get('preco')
+        imagem = request.FILES.get('imagem')
+        categoria_id = request.POST.get('categoria')
 
-        produto = Produto(nome, descricao, quantidade, preco)
-        return HttpResponse(
-                            f"Cliente cadastrado com sucesso! <br>: "
-                            f"<br> Nome: {produto.nome} "
-                            f"<br> Descrição: {produto.descricao}"
-                            f"<br> Quantidade: {produto.quantidade} "
-                            f"<br> Preço: {produto.preco}"
-         )
-    return render(request, 'cadastro_produto.html')
+        if nome and descricao and quantidade and preco and imagem and categoria_id:
+            categoria = Categoria.objects.get(id=categoria_id)
+            produto = Produto(nome=nome, descricao=descricao, imagem=imagem, valor=preco, quantidade=quantidade, categoria=categoria)
+            produto.save()
+            return redirect('cadastro_produto.html')
+
+
+    return render(request, 'cadastro_produto.html', {'categorias': categorias})
